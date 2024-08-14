@@ -1,0 +1,63 @@
+[gd_scene load_steps=12 format=3 uid="uid://cac2tu8gaweu5"]
+
+[ext_resource type="Script" path="res://Script/BasicMove.gd" id="1_3vta1"]
+[ext_resource type="Texture2D" uid="uid://ci6v1nc46w3bb" path="res://Sprite/superSentai2.png" id="2_ktamc"]
+[ext_resource type="Script" path="res://Script/SpringArm3D.gd" id="3_djydu"]
+[ext_resource type="Texture2D" uid="uid://bnqpaqdg2mimx" path="res://Sprite/11635-v7.jpg" id="4_khwbo"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1jy65"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t4xxa"]
+albedo_texture = ExtResource("2_ktamc")
+normal_scale = 0.09
+uv1_offset = Vector3(1, 1, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rh2it"]
+
+[sub_resource type="Skin" id="Skin_ygv4d"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j6me1"]
+albedo_texture = ExtResource("4_khwbo")
+albedo_texture_force_srgb = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_yw4q5"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_61mbl"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="SuperSentai" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.113098, 0)
+script = ExtResource("1_3vta1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SuperSentai"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00761795, 1.14229, 0.0545866)
+shape = SubResource("CapsuleShape3D_1jy65")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SuperSentai/CollisionShape3D"]
+material_override = SubResource("StandardMaterial3D_t4xxa")
+mesh = SubResource("CapsuleMesh_rh2it")
+skin = SubResource("Skin_ygv4d")
+skeleton = NodePath("../..")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="SuperSentai"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -5)
+script = ExtResource("3_djydu")
+
+[node name="Camera3D" type="Camera3D" parent="SuperSentai/SpringArm3D"]
+transform = Transform3D(-1, -2.26267e-08, 8.44439e-08, 0, 0.965926, 0.258819, -8.74228e-08, 0.258819, -0.965926, 0, 0, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.420149, 0.907455, 0, -0.907455, 0.420149, 1.70848, 41.7716, 11.8685)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="Sol" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+material_overlay = SubResource("StandardMaterial3D_j6me1")
+mesh = SubResource("PlaneMesh_yw4q5")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+shape = SubResource("WorldBoundaryShape3D_61mbl")
