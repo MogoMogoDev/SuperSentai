@@ -1,9 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://cac2tu8gaweu5"]
+[gd_scene load_steps=16 format=3 uid="uid://dlo3qc1uppky1"]
 
 [ext_resource type="Script" path="res://Script/BasicMove.gd" id="1_3vta1"]
 [ext_resource type="Texture2D" uid="uid://ci6v1nc46w3bb" path="res://Sprite/superSentai2.png" id="2_ktamc"]
-[ext_resource type="Script" path="res://Script/SpringArm3D.gd" id="3_djydu"]
 [ext_resource type="Texture2D" uid="uid://bnqpaqdg2mimx" path="res://Sprite/11635-v7.jpg" id="4_khwbo"]
+[ext_resource type="Script" path="res://Script/Projectile.gd" id="4_tatsh"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1jy65"]
 
@@ -16,7 +16,11 @@ uv1_offset = Vector3(1, 1, 1)
 
 [sub_resource type="Skin" id="Skin_ygv4d"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_614ey"]
+size = Vector3(3, 3, 3)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j6me1"]
+albedo_color = Color(0.427451, 0.364706, 0.0901961, 1)
 albedo_texture = ExtResource("4_khwbo")
 albedo_texture_force_srgb = true
 
@@ -24,40 +28,62 @@ albedo_texture_force_srgb = true
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_61mbl"]
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_sr52t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a0v32"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_v5n8x"]
+
 [node name="Node3D" type="Node3D"]
 
 [node name="SuperSentai" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.113098, 0)
 script = ExtResource("1_3vta1")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SuperSentai"]
+[node name="HitBox" type="CollisionShape3D" parent="SuperSentai"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00761795, 1.14229, 0.0545866)
 shape = SubResource("CapsuleShape3D_1jy65")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="SuperSentai/CollisionShape3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SuperSentai/HitBox"]
 material_override = SubResource("StandardMaterial3D_t4xxa")
 mesh = SubResource("CapsuleMesh_rh2it")
 skin = SubResource("Skin_ygv4d")
 skeleton = NodePath("../..")
 
-[node name="SpringArm3D" type="SpringArm3D" parent="SuperSentai"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -5)
-script = ExtResource("3_djydu")
+[node name="ParryZone" type="Area3D" parent="SuperSentai"]
 
-[node name="Camera3D" type="Camera3D" parent="SuperSentai/SpringArm3D"]
-transform = Transform3D(-1, -2.26267e-08, 8.44439e-08, 0, 0.965926, 0.258819, -8.74228e-08, 0.258819, -0.965926, 0, 0, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SuperSentai/ParryZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.27549, 0)
+shape = SubResource("BoxShape3D_614ey")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.420149, 0.907455, 0, -0.907455, 0.420149, 1.70848, 41.7716, 11.8685)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="Sol" type="StaticBody3D" parent="."]
 
-[node name="Sol" type="MeshInstance3D" parent="StaticBody3D"]
+[node name="Sol" type="MeshInstance3D" parent="Sol"]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
 material_overlay = SubResource("StandardMaterial3D_j6me1")
 mesh = SubResource("PlaneMesh_yw4q5")
 skeleton = NodePath("../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sol"]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
 shape = SubResource("WorldBoundaryShape3D_61mbl")
+
+[node name="Projectile" type="Area3D" parent="."]
+transform = Transform3D(-0.998827, 0, 0.048414, 0, 1, 0, -0.048414, 0, -0.998827, -0.434334, 0.962689, 10.9919)
+script = ExtResource("4_tatsh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Projectile"]
+shape = SubResource("SphereShape3D_sr52t")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Projectile"]
+material_override = SubResource("StandardMaterial3D_a0v32")
+mesh = SubResource("SphereMesh_v5n8x")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 6.18173e-08, -6.18173e-08, 0, 0.707107, 0.707107, 8.74228e-08, 0.707107, -0.707107, 0, 10.4649, -5)
+
+[connection signal="body_entered" from="Projectile" to="Projectile" method="_on_body_entered"]
